@@ -58,7 +58,7 @@ ul.task-list li input[type="checkbox"] {
       }
     }
     const toggleBodyColorPrimary = () => {
-      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=preload])");
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
       if (bsSheetEl) {
         toggleBodyColorMode(bsSheetEl);
       }
@@ -76,33 +76,22 @@ ul.task-list li input[type="checkbox"] {
         }
       }
     };
-    let firstLoad = true;
     const toggleColorMode = (alternate) => {
       // Switch the stylesheets
       const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
       const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
       manageTransitions('#quarto-margin-sidebar .nav-link', false);
       if (alternate) {
-        if (firstLoad) {
-          disableStylesheet(primaryStylesheets);
-          firstLoad = false;
-        } else {
-          enableStylesheet(alternateStylesheets,
-            () => disableStylesheet(primaryStylesheets));
-        }
+        disableStylesheet(primaryStylesheets)
+        enableStylesheet(alternateStylesheets);
         for (const sheetNode of alternateStylesheets) {
           if (sheetNode.id === "quarto-bootstrap") {
             toggleBodyColorMode(sheetNode);
           }
         }
       } else {
-        if (firstLoad) {
-          disableStylesheet(alternateStylesheets);
-          firstLoad = false;
-        } else {
-          enableStylesheet(primaryStylesheets,
-            () => disableStylesheet(alternateStylesheets));
-        }
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
         toggleBodyColorPrimary();
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
@@ -122,20 +111,13 @@ ul.task-list li input[type="checkbox"] {
     const disableStylesheet = (stylesheets) => {
       for (let i=0; i < stylesheets.length; i++) {
         const stylesheet = stylesheets[i];
-        stylesheet.rel = 'preload';
+        stylesheet.rel = 'disabled-stylesheet';
       }
     }
-    const enableStylesheet = (stylesheets, afterLoad) => {
+    const enableStylesheet = (stylesheets) => {
       for (let i=0; i < stylesheets.length; i++) {
         const stylesheet = stylesheets[i];
-        if (stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
-          if (stylesheet.id === 'quarto-bootstrap' && afterLoad) {
-            const listener = () => {
-              afterLoad();
-              stylesheet.removeEventListener('load', listener);
-            };
-            stylesheet.onload = listener;
-          }
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
           stylesheet.rel = 'stylesheet';
         }
       }
